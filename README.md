@@ -1,29 +1,29 @@
-# {{PROJECT_NAME}}
+# deberta-prompt-injection-detection
 
-> {{PROJECT_DESCRIPTION}}
+> Multi-stage fine-tuning pipeline for DeBERTa-v3 to detect prompt injection attacks using Safe-Guard, SPML, and NVIDIA Aegis datasets.
 
-**Status:** {{STATUS}} | **Language:** {{LANGUAGE}} | **Framework:** {{FRAMEWORK}}
+**Status:** Active Development | **Language:** Python 3.11 | **Framework:** HuggingFace Transformers
 
 ---
 
 ## Overview
 
-{{PROJECT_OVERVIEW}}
+— write 2–3 paragraph overview for this project
 
 ---
 
 ## Features
 
-- {{FEATURE_1}}
-- {{FEATURE_2}}
-- {{FEATURE_3}}
+- — describe a key feature
+- — describe a key feature
+- — describe a key feature
 
 ---
 
 ## Prerequisites
 
-- {{PREREQ_1}}
-- {{PREREQ_2}}
+- — list prerequisites here
+- — list prerequisites here
 
 ---
 
@@ -31,22 +31,22 @@
 
 ```bash
 # Install dependencies
-{{INSTALL_COMMAND}}
+pip install -r requirements.txt
 
 # Run the application
-{{RUN_COMMAND}}
+python src/train.py
 ```
 
 ## Testing
 
 ```bash
-{{TEST_COMMAND}}
+pytest tests/ -v
 ```
 
 ## Linting
 
 ```bash
-{{LINT_COMMAND}}
+ruff check src/ {{LINT_COMMAND}}{{LINT_COMMAND}} black src/
 ```
 
 ---
@@ -54,14 +54,14 @@
 ## Repository Structure
 
 ```
-{{REPO_TREE}}
+— run: tree -L 3 --gitignore
 ```
 
 ---
 
 ## Architecture
 
-{{ARCHITECTURE_SUMMARY}}
+— fill in: 3–5 sentence architecture description
 
 Full system design is documented in [`docs/architecture.md`](docs/architecture.md).
 Key technical decisions are in [`docs/adr/`](docs/adr/).
@@ -70,9 +70,9 @@ Key technical decisions are in [`docs/adr/`](docs/adr/).
 
 ## License
 
-{{LICENSE}} — see [`LICENSE`](LICENSE) for details.
+MIT — see [`LICENSE`](LICENSE) for details.
 
 ---
 
-*Maintained by [@{{GITHUB_USERNAME}}](https://github.com/{{GITHUB_USERNAME}})*
-*Last updated: {{LAST_UPDATED}}*
+*Maintained by [@BUDDY26](https://github.com/BUDDY26)*
+*Last updated: 2026-03-14*

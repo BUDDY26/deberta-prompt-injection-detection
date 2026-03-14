@@ -1,8 +1,8 @@
 # ADR-001: [Decision Title]
 
-**Date:** {{LAST_UPDATED}}
+**Date:** 2026-03-14
 **Status:** Proposed
-**Author:** {{GITHUB_USERNAME}}
+**Author:** BUDDY26
 
 > Copy this file to create a new ADR. Rename to `ADR-NNN-short-title.md`
 > and increment NNN sequentially. Delete this instruction block when done.

@@ -51,24 +51,24 @@ If you prefer to set up manually without the script:
 
 | Placeholder | Replace With | Example |
 |-------------|-------------|---------|
-| `{{PROJECT_NAME}}` | Your project name | `my-api-service` |
-| `{{PROJECT_DESCRIPTION}}` | One-sentence description | `A REST API for managing inventory` |
-| `{{GITHUB_USERNAME}}` | Your GitHub username | `jdoe` |
-| `{{REPO_NAME}}` | Repository name | `inventory-api` |
-| `{{LANGUAGE}}` | Primary language + version | `Python 3.11` |
-| `{{FRAMEWORK}}` | Framework (or `None`) | `FastAPI` |
-| `{{DATABASE}}` | Database (or `None`) | `PostgreSQL` |
-| `{{TEST_FRAMEWORK}}` | Test framework | `pytest` |
-| `{{INSTALL_COMMAND}}` | Dependency install command | `pip install -r requirements.txt` |
-| `{{RUN_COMMAND}}` | Application run command | `python src/main.py` |
-| `{{TEST_COMMAND}}` | Test run command | `pytest tests/ -v` |
-| `{{LINT_COMMAND}}` | Lint/format command | `ruff check src/ && black src/` |
-| `{{LICENSE}}` | License type | `MIT` |
-| `{{LAST_UPDATED}}` | Today's date | `2026-03-13` |
-| `{{STATUS}}` | Project status | `Active Development` |
-| `{{DEMONSTRATES}}` | Skills demonstrated | `REST API design, TDD, async processing` |
-| `{{ARCHITECTURE_SUMMARY}}` | 3–5 sentence architecture description | *(fill in after design)* |
-| `{{REPO_TREE}}` | Output of `tree -L 3 --gitignore` | *(fill in after populating src/)* |
+| `deberta-prompt-injection-detection` | Your project name | `my-api-service` |
+| `Multi-stage fine-tuning pipeline for DeBERTa-v3 to detect prompt injection attacks using Safe-Guard, SPML, and NVIDIA Aegis datasets.` | One-sentence description | `A REST API for managing inventory` |
+| `BUDDY26` | Your GitHub username | `jdoe` |
+| `deberta-prompt-injection-detection` | Repository name | `inventory-api` |
+| `Python 3.11` | Primary language + version | `Python 3.11` |
+| `HuggingFace Transformers` | Framework (or `None`) | `FastAPI` |
+| `None` | Database (or `None`) | `PostgreSQL` |
+| `pytest` | Test framework | `pytest` |
+| `pip install -r requirements.txt` | Dependency install command | `pip install -r requirements.txt` |
+| `python src/train.py` | Application run command | `python src/main.py` |
+| `pytest tests/ -v` | Test run command | `pytest tests/ -v` |
+| `ruff check src/ {{LINT_COMMAND}}{{LINT_COMMAND}} black src/` | Lint/format command | `ruff check src/ && black src/` |
+| `MIT` | License type | `MIT` |
+| `2026-03-14` | Today's date | `2026-03-13` |
+| `Active Development` | Project status | `Active Development` |
+| `— fill in: what technical skills does this project show?` | Skills demonstrated | `REST API design, TDD, async processing` |
+| `— fill in: 3–5 sentence architecture description` | 3–5 sentence architecture description | *(fill in after design)* |
+| `— run: tree -L 3 --gitignore` | Output of `tree -L 3 --gitignore` | *(fill in after populating src/)* |
 
 ---
 

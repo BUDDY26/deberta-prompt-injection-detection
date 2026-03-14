@@ -1,7 +1,7 @@
 # Operations Runbook
 
-**Project:** {{PROJECT_NAME}}
-**Last updated:** {{LAST_UPDATED}}
+**Project:** deberta-prompt-injection-detection
+**Last updated:** 2026-03-14
 
 > Update this runbook whenever setup steps, commands, or environment variables change.
 
@@ -9,8 +9,8 @@
 
 ## Prerequisites
 
-- {{PREREQ_1}}
-- {{PREREQ_2}}
+- — list prerequisites here
+- — list prerequisites here
 
 ---
 
@@ -19,14 +19,14 @@
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/{{GITHUB_USERNAME}}/{{REPO_NAME}}.git
-cd {{REPO_NAME}}
+git clone https://github.com/BUDDY26/deberta-prompt-injection-detection.git
+cd deberta-prompt-injection-detection
 ```
 
 ### 2. Install dependencies
 
 ```bash
-{{INSTALL_COMMAND}}
+pip install -r requirements.txt
 ```
 
 ### 3. Configure environment
@@ -39,7 +39,7 @@ cp .env.example .env
 ### 4. Run the application
 
 ```bash
-{{RUN_COMMAND}}
+python src/train.py
 ```
 
 ---
@@ -47,7 +47,7 @@ cp .env.example .env
 ## Running Tests
 
 ```bash
-{{TEST_COMMAND}}
+pytest tests/ -v
 ```
 
 ---
@@ -55,7 +55,7 @@ cp .env.example .env
 ## Linting and Formatting
 
 ```bash
-{{LINT_COMMAND}}
+ruff check src/ {{LINT_COMMAND}}{{LINT_COMMAND}} black src/
 ```
 
 ---
@@ -86,8 +86,8 @@ See `.env.example` for the full list of required variables.
 ### Tests fail on first run
 
 1. Confirm all variables in `.env` are set correctly
-2. Confirm dependencies are installed: `{{INSTALL_COMMAND}}`
-3. Check the exact test command: `{{TEST_COMMAND}}`
+2. Confirm dependencies are installed: `pip install -r requirements.txt`
+3. Check the exact test command: `pytest tests/ -v`
 
 ### Structure validation fails
 

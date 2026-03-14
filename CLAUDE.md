@@ -9,33 +9,33 @@
 
 ## 1. Project Identity
 
-**Project Name:** `{{PROJECT_NAME}}`
-**Purpose (WHY):** `{{PROJECT_DESCRIPTION}}`
-**Status:** `{{STATUS}}`  <!-- Active Development | Maintenance | Portfolio | Archived -->
-**Primary Language(s):** `{{LANGUAGE}}`
-**Framework(s):** `{{FRAMEWORK}}`
-**Owner / Portfolio:** `{{GITHUB_USERNAME}}`
+**Project Name:** `deberta-prompt-injection-detection`
+**Purpose (WHY):** `Multi-stage fine-tuning pipeline for DeBERTa-v3 to detect prompt injection attacks using Safe-Guard, SPML, and NVIDIA Aegis datasets.`
+**Status:** `Active Development`  <!-- Active Development | Maintenance | Portfolio | Archived -->
+**Primary Language(s):** `Python 3.11`
+**Framework(s):** `HuggingFace Transformers`
+**Owner / Portfolio:** `BUDDY26`
 
 ---
 
 ## 2. Repository Map (WHAT)
 
 ```
-{{REPO_TREE}}
+— run: tree -L 3 --gitignore
 ```
 
 <!-- Run `tree -L 3 --gitignore` and paste the output above after first scan -->
 
 **Key Entry Points:**
-- `{{ENTRY_POINT_1}}`
-- `{{ENTRY_POINT_2}}`
+- `src/main.py — replace with actual entry point`
+- `— replace with secondary entry point or remove`
 
 **Configuration Files:**
 - `.env.example` — environment variable reference (never commit `.env`)
-- `{{CONFIG_FILE_2}}`
+- `— replace with config file or remove`
 
 **Test Suite:**
-- `tests/` — {{TEST_FRAMEWORK}}, run with `{{TEST_COMMAND}}`
+- `tests/` — pytest, run with `pytest tests/ -v`
 
 ---
 
@@ -68,16 +68,16 @@
 ### Common Commands
 ```bash
 # Install dependencies
-{{INSTALL_COMMAND}}
+pip install -r requirements.txt
 
 # Run the application
-{{RUN_COMMAND}}
+python src/train.py
 
 # Run tests
-{{TEST_COMMAND}}
+pytest tests/ -v
 
 # Run linter + formatter
-{{LINT_COMMAND}}
+ruff check src/ {{LINT_COMMAND}}{{LINT_COMMAND}} black src/
 
 # Validate repository structure
 bash scripts/validate-structure.sh
@@ -166,7 +166,7 @@ Once approved: update the plan first, then update the code to match.
 
 ## 6. Architecture Summary
 
-`{{ARCHITECTURE_SUMMARY}}`
+`— fill in: 3–5 sentence architecture description`
 
 > Full system design, component breakdown, and data flow are documented in
 > `docs/architecture.md`. Key technical decisions are in `docs/adr/`.
@@ -176,8 +176,8 @@ Once approved: update the plan first, then update the code to match.
 ## 7. Known Issues / Sharp Edges
 
 <!-- Fill this in after running the entry protocol. Examples below: -->
-- `{{SHARP_EDGE_1}}` — e.g., `src/auth/` token logic is tightly coupled to legacy session model. Do not refactor without approval.
-- `{{SHARP_EDGE_2}}` — e.g., `migrations/` must be applied in strict order. Never reorder.
+- `— fill in after running entry protocol` — e.g., `src/auth/` token logic is tightly coupled to legacy session model. Do not refactor without approval.
+- `— fill in after running entry protocol` — e.g., `migrations/` must be applied in strict order. Never reorder.
 
 ---
 
@@ -223,11 +223,11 @@ Once approved: update the plan first, then update the code to match.
 ## 11. Portfolio Context
 
 **Target Audience:** Graduate admissions reviewers (UT Austin MSCS), software engineering employers
-**Demonstrates:** `{{DEMONSTRATES}}`  <!-- e.g., REST API design, async processing, TDD -->
+**Demonstrates:** `— fill in: what technical skills does this project show?`  <!-- e.g., REST API design, async processing, TDD -->
 **Key Technical Decisions:** See `docs/adr/` for documented rationale
 **Portfolio Repository:** Yes — maintain professional commit history and documentation standards
 
 ---
 
-*Last updated by Claude: `{{LAST_UPDATED}}`*
+*Last updated by Claude: `2026-03-14`*
 *Entry protocol completed: `no — run on first session`*

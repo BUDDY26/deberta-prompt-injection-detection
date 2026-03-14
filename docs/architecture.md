@@ -1,7 +1,7 @@
 # Architecture Overview
 
-**Project:** {{PROJECT_NAME}}
-**Last updated:** {{LAST_UPDATED}}
+**Project:** deberta-prompt-injection-detection
+**Last updated:** 2026-03-14
 
 > Update this document whenever the system design changes.
 > Keep it in sync with the actual implementation — do not let it drift.
@@ -10,7 +10,7 @@
 
 ## System Overview
 
-{{ARCHITECTURE_SUMMARY}}
+— fill in: 3–5 sentence architecture description
 
 ---
 

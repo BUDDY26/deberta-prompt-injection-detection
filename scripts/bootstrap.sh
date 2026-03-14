@@ -39,7 +39,7 @@ if [[ ! -f "CLAUDE.md" ]]; then
 fi
 
 # ── Guard: must not have already been bootstrapped ────────────────────────────
-if ! grep -q "{{PROJECT_NAME}}" CLAUDE.md 2>/dev/null; then
+if ! grep -q "deberta-prompt-injection-detection" CLAUDE.md 2>/dev/null; then
   warn "This repository appears to have already been bootstrapped."
   read -rp "Run again anyway? This will overwrite previous replacements. (y/N): " confirm
   [[ "${confirm,,}" == "y" ]] || { info "Aborted."; exit 0; }

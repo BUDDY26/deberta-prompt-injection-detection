@@ -14,7 +14,7 @@ Claude enforces these automatically — they do not require explicit invocation.
 
 After editing a source file, append:
 
-> "Run `{{LINT_COMMAND}}` to format and lint."
+> "Run `ruff check src/ {{LINT_COMMAND}}{{LINT_COMMAND}} black src/` to format and lint."
 
 Do not run the formatter automatically. Remind only.
 
@@ -40,7 +40,7 @@ Do not proceed unless the user explicitly confirms. This applies to generated fi
 
 After any edit to `src/`, append:
 
-> "Source file changed. Run `{{TEST_COMMAND}}` to verify nothing is broken."
+> "Source file changed. Run `pytest tests/ -v` to verify nothing is broken."
 
 ---
 

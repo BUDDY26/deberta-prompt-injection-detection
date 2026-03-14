@@ -1,8 +1,8 @@
 # QA Plan
 
-**Project:** {{PROJECT_NAME}}
-**Test framework:** {{TEST_FRAMEWORK}}
-**Last updated:** {{LAST_UPDATED}}
+**Project:** deberta-prompt-injection-detection
+**Test framework:** pytest
+**Last updated:** 2026-03-14
 
 ---
 
@@ -22,7 +22,7 @@
 - **Scope:** Individual functions and classes in isolation
 - **Mocking policy:** Mock external I/O (database, network, filesystem); do not mock internal domain logic
 - **Coverage target:** 80% minimum per source file
-- **Framework:** {{TEST_FRAMEWORK}}
+- **Framework:** pytest
 
 ### Integration Tests — `tests/integration/`
 
@@ -35,7 +35,7 @@
 ## Test Command
 
 ```bash
-{{TEST_COMMAND}}
+pytest tests/ -v
 ```
 
 ---
