@@ -1,0 +1,30 @@
+================================================================================
+Model Evaluation Results
+================================================================================
+
+Model: deberta-pi-full-stage2-final
+Dataset: nvidia/Aegis-AI-Content-Safety-Dataset-2.0
+Test Set Size: 1964
+Device: cuda
+
+Overall Accuracy: 0.4160 (41.60%)
+
+Precision: 0.4257
+Recall:    0.2380
+F1-Score:  0.3053
+
+Confusion Matrix:
+                Predicted
+              Safe  Unsafe
+Actual Safe     565    340
+      Unsafe    807    252
+
+Detailed Classification Report:
+              precision    recall  f1-score   support
+
+        Safe     0.4118    0.6243    0.4963       905
+      Unsafe     0.4257    0.2380    0.3053      1059
+
+    accuracy                         0.4160      1964
+   macro avg     0.4187    0.4311    0.4008      1964
+weighted avg     0.4193    0.4160    0.3933      1964

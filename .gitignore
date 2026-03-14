@@ -46,3 +46,7 @@ Thumbs.db
 
 # Bootstrap
 .bootstrap-complete
+
+# Trained models (large artifacts)
+models/*
+!models/README.md
