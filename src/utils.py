@@ -13,12 +13,9 @@ confirmed in docs/evidence-ledger.md §7.
 import os
 import random
 
-import evaluate
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
-
-_accuracy_metric = evaluate.load("accuracy")
 
 
 def compute_metrics(eval_pred):
@@ -27,10 +24,14 @@ def compute_metrics(eval_pred):
 
     Sourced from src/finetune.py lines 19-22 and src/finetune_2.py lines 19-22
     (identical implementations).
+
+    NumPy-based accuracy avoids a sys.path collision between the HuggingFace
+    evaluate package and src/evaluate.py when pytest prepends src/ to sys.path
+    via conftest.py.
     """
     logits, labels = eval_pred
     preds = logits.argmax(axis=-1)
-    return _accuracy_metric.compute(predictions=preds, references=labels)
+    return {"accuracy": float((preds == labels).mean())}
 
 
 def plot_training_metrics(trainer, dataset_name, stage_num, output_dir):
