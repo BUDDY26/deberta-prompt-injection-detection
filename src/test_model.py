@@ -145,7 +145,7 @@ def get_text_and_label(example):
     # Default to 0 if no label found
     if label is None:
         label = 0
-        print(f"Warning: Could not determine label for example, defaulting to 0 (safe)")
+        print("Warning: Could not determine label for example, defaulting to 0 (safe)")
         print(f"Example keys: {example.keys()}")
         print(f"Example values: {example}")
     
