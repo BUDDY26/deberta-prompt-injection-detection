@@ -2,11 +2,12 @@
 Test script for evaluating the fine-tuned model on the training graph and eval loss and accuacy graph for each model step trained, with the name of the dataset dataset
 """
 
+import random
+
 import torch
 from datasets import load_dataset
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 from sklearn.metrics import accuracy_score, precision_recall_fscore_support, confusion_matrix, classification_report
-import numpy as np
 from tqdm import tqdm
 
 # Configuration
@@ -43,7 +44,7 @@ except Exception as e:
 print("Loading NVIDIA Aegis AI Content Safety Dataset...")
 try:
     dataset = load_dataset("nvidia/Aegis-AI-Content-Safety-Dataset-2.0")
-    print(f"Dataset loaded successfully!")
+    print("Dataset loaded successfully!")
     print(f"Available splits: {list(dataset.keys())}")
     
     # Use test split if available, otherwise use validation or train
@@ -102,12 +103,12 @@ def get_text_and_label(example):
                 # If it's a string number
                 try:
                     label = int(raw_label)
-                except:
+                except ValueError:
                     label = 1 if 'unsafe' in raw_label_lower else 0
         else:
             # Numeric label - keep as is
             label = int(raw_label)
-    
+
     # Fallback to 'label' field if prompt_label not found
     elif 'label' in example:
         raw_label = example['label']
@@ -120,7 +121,7 @@ def get_text_and_label(example):
             else:
                 try:
                     label = int(raw_label)
-                except:
+                except ValueError:
                     label = 1 if 'unsafe' in raw_label_lower else 0
         else:
             label = int(raw_label)
@@ -234,7 +235,6 @@ print("RANDOM SAMPLE TEST EXAMPLES")
 print("="*80 + "\n")
 
 # Select 10 random indices
-import random
 random.seed(42)
 num_random_samples = min(10, len(texts))
 random_indices = random.sample(range(len(texts)), num_random_samples)
@@ -293,7 +293,7 @@ with open("test_results_2.txt", "w", encoding="utf-8") as f:
     f.write("Model Evaluation Results\n")
     f.write("="*80 + "\n\n")
     f.write(f"Model: {MODEL_PATH}\n")
-    f.write(f"Dataset: nvidia/Aegis-AI-Content-Safety-Dataset-2.0\n")
+    f.write("Dataset: nvidia/Aegis-AI-Content-Safety-Dataset-2.0\n")
     f.write(f"Test Set Size: {len(texts)}\n")
     f.write(f"Device: {device}\n\n")
     f.write(f"Overall Accuracy: {accuracy:.4f} ({accuracy*100:.2f}%)\n\n")
@@ -301,8 +301,8 @@ with open("test_results_2.txt", "w", encoding="utf-8") as f:
     f.write(f"Recall:    {recall:.4f}\n")
     f.write(f"F1-Score:  {f1:.4f}\n\n")
     f.write("Confusion Matrix:\n")
-    f.write(f"                Predicted\n")
-    f.write(f"              Safe  Unsafe\n")
+    f.write("                Predicted\n")
+    f.write("              Safe  Unsafe\n")
     f.write(f"Actual Safe   {cm[0][0]:5d}  {cm[0][1]:5d}\n")
     f.write(f"      Unsafe  {cm[1][0]:5d}  {cm[1][1]:5d}\n\n")
     f.write("Detailed Classification Report:\n")

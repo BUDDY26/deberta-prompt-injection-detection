@@ -15,7 +15,6 @@ Covered:
 
 from unittest.mock import patch
 
-import pytest
 from datasets import Dataset, DatasetDict
 
 import data

@@ -144,7 +144,7 @@ if [[ -f ".bootstrap-complete" ]]; then
   pass "Bootstrap has been run"
   cat .bootstrap-complete | sed 's/^/      /'
 else
-  warn "Bootstrap has not been run — run: bash scripts/bootstrap.sh"
+  echo -e "  ${YELLOW}⚠${RESET}  Bootstrap has not been run — run: bash scripts/bootstrap.sh"
 fi
 
 # ── Summary ───────────────────────────────────────────────────────────────────
