@@ -109,7 +109,18 @@ done
 # ── Placeholder check ─────────────────────────────────────────────────────────
 header "Placeholder Replacement Check"
 
-PLACEHOLDER_COUNT=$(grep -r "{{[A-Z_]*}}" --include="*.md" --include="*.yml" --include="*.yaml" --include="*.sh" . 2>/dev/null | grep -v ".git" | wc -l || true)
+# Exclude from placeholder check:
+#   - TEMPLATE_README.md : meta-template that intentionally contains example tokens
+#   - scripts/           : this script and bootstrap.sh use the pattern in their own logic
+#   - .claude/           : skill/hook files reference the concept in checklist text
+#   - docs/evidence-ledger.md       : read-only; documents historical token state
+#   - docs/implementation-plan.md   : read-only; describes Phase 0 task that is now done
+_PLACEHOLDER_EXCLUDE="TEMPLATE_README|scripts/|\.claude/|evidence-ledger|implementation-plan"
+
+PLACEHOLDER_COUNT=$(grep -r "{{[A-Z_]*}}" --include="*.md" --include="*.yml" --include="*.yaml" --include="*.sh" . 2>/dev/null \
+  | grep -v ".git" \
+  | grep -Ev "$_PLACEHOLDER_EXCLUDE" \
+  | wc -l || true)
 
 if [[ "$PLACEHOLDER_COUNT" -eq 0 ]]; then
   pass "No unfilled {{PLACEHOLDER}} tokens found"
@@ -118,6 +129,7 @@ else
   echo ""
   grep -r "{{[A-Z_]*}}" --include="*.md" --include="*.yml" --include="*.yaml" --include="*.sh" . 2>/dev/null \
     | grep -v ".git" \
+    | grep -Ev "$_PLACEHOLDER_EXCLUDE" \
     | sed 's/^/      /' \
     | head -20
   if [[ "$PLACEHOLDER_COUNT" -gt 20 ]]; then

@@ -1,0 +1,18 @@
+# Development and CI dependencies — not required to run the training pipeline.
+# Install with: pip install -r requirements-dev.txt
+#
+# Runtime dependencies must be installed first:
+#   pip install -r requirements.txt
+
+-r requirements.txt
+
+# Testing
+pytest>=7.4.0
+pytest-cov>=4.1.0
+
+# Linting and formatting
+ruff>=0.3.0
+black>=24.0.0
+
+# Security scanning
+bandit>=1.7.7

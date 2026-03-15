@@ -49,7 +49,7 @@ Run the test command from CLAUDE.md Section 3 and capture coverage output. Repor
 | At least one ADR exists in `docs/adr/` | |
 | `docs/qa/qa-plan.md` is filled in | |
 | `docs/runbooks/operations.md` is filled in | |
-| No unfilled `{{PLACEHOLDER}}` tokens in any file | |
+| No unfilled template tokens in any operational file | |
 
 ---
 

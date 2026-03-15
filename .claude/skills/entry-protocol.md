@@ -74,7 +74,7 @@ Note any documentation that is incomplete or references unfilled placeholders.
 
 ## Phase 7 — Identify Unfilled Placeholders
 
-Scan all `.md`, `.yml`, `.sh` files for remaining `{{PLACEHOLDER}}` tokens.
+Scan all `.md`, `.yml`, `.sh` files for remaining unfilled template tokens (e.g. double-brace placeholders).
 List any found. If none, confirm: "No unfilled placeholders."
 
 ---

@@ -14,7 +14,7 @@ Claude enforces these automatically — they do not require explicit invocation.
 
 After editing a source file, append:
 
-> "Run `ruff check src/ {{LINT_COMMAND}}{{LINT_COMMAND}} black src/` to format and lint."
+> "Run `ruff check src/ && black --check src/` to format and lint."
 
 Do not run the formatter automatically. Remind only.
 

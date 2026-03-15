@@ -27,12 +27,13 @@
 <!-- Run `tree -L 3 --gitignore` and paste the output above after first scan -->
 
 **Key Entry Points:**
-- `src/main.py — replace with actual entry point`
-- `— replace with secondary entry point or remove`
+- `src/train.py` — full fine-tuning pipeline (three-stage sequential)
+- `src/train_lora.py` — LoRA adapter pipeline (two-stage sequential)
+- `src/evaluate.py` — post-training evaluation (`--model-path`, `--dataset` CLI)
 
 **Configuration Files:**
 - `.env.example` — environment variable reference (never commit `.env`)
-- `— replace with config file or remove`
+- `src/config.py` — all confirmed hyperparameters, dataset IDs, and output paths
 
 **Test Suite:**
 - `tests/` — pytest, run with `pytest tests/ -v`
@@ -77,7 +78,7 @@ python src/train.py
 pytest tests/ -v
 
 # Run linter + formatter
-ruff check src/ {{LINT_COMMAND}}{{LINT_COMMAND}} black src/
+ruff check src/ && black --check src/
 
 # Validate repository structure
 bash scripts/validate-structure.sh
@@ -124,6 +125,14 @@ Each layer is authoritative over everything below it. If code and documentation 
 - The implementation plan defines what gets built and in what order. Code must follow it.
 - An AI assistant must not modify ADRs or the implementation plan automatically.
 
+### Implementation Scope Rule
+
+An implementation prompt authorizes changes only to the files explicitly listed in its scope.
+
+- If implementing a file requires a supporting change to a file **not listed in scope**, the assistant must **stop**, report the dependency (what file, what change, why it is needed), and **wait for explicit approval** before making that change.
+- This applies to all files — including shared modules such as `src/config.py` — even when the change seems additive or obviously correct.
+- Phase completion reports must list **every file modified**, including any out-of-scope files that were changed. Silent out-of-scope edits are a governance violation regardless of whether the change is technically correct.
+
 ### Conflict Resolution Protocol
 
 If a conflict is discovered — the plan cannot be followed exactly as written — the assistant must:
@@ -166,7 +175,7 @@ Once approved: update the plan first, then update the code to match.
 
 ## 6. Architecture Summary
 
-`— fill in: 3–5 sentence architecture description`
+The repository implements a binary prompt injection classifier built on `ProtectAI/deberta-v3-base-prompt-injection` (DeBERTa-v3-base pre-fine-tuned on prompt injection data) using a three-stage sequential curriculum: Safe-Guard Prompt Injection → SPML Chatbot Prompt Injection → NVIDIA Aegis AI Content Safety 2.0. Two coexisting training pipelines share the same dataset sequence: full fine-tuning (`src/train.py`, all weights updated) and LoRA adapter training (`src/train_lora.py`, PEFT r=16 alpha=32). Dataset loading and label mapping are centralized in `src/data.py`, shared utilities in `src/utils.py`, and all confirmed hyperparameters in `src/config.py`. Post-training evaluation is handled by `src/evaluate.py`, which writes deterministic result files to `results/evaluation/`. The unit test suite in `tests/unit/` covers data preprocessing, metric computation, and hyperparameter values using synthetic in-memory fixtures — no network access required.
 
 > Full system design, component breakdown, and data flow are documented in
 > `docs/architecture.md`. Key technical decisions are in `docs/adr/`.
@@ -175,9 +184,8 @@ Once approved: update the plan first, then update the code to match.
 
 ## 7. Known Issues / Sharp Edges
 
-<!-- Fill this in after running the entry protocol. Examples below: -->
-- `— fill in after running entry protocol` — e.g., `src/auth/` token logic is tightly coupled to legacy session model. Do not refactor without approval.
-- `— fill in after running entry protocol` — e.g., `migrations/` must be applied in strict order. Never reorder.
+- `src/finetune.py` and `src/finetune_2.py` are the original monolithic training scripts, retained alongside the modularized `src/train.py` per Phase 3 scope. Do not delete them without explicit user approval — they are the evidence-backed originals.
+- The LoRA pipeline has no cross-dataset evaluation result. `deberta-pi-lora-final-adapter` and `deberta-pi-lora-final-full` carry only within-distribution validation metrics (98.67% / 96.07%). This limitation is documented honestly in ADR-005 and the model card READMEs. Do not claim cross-dataset accuracy for LoRA without running `src/evaluate.py` against a confirmed checkpoint.
 
 ---
 
@@ -223,11 +231,11 @@ Once approved: update the plan first, then update the code to match.
 ## 11. Portfolio Context
 
 **Target Audience:** Graduate admissions reviewers (UT Austin MSCS), software engineering employers
-**Demonstrates:** `— fill in: what technical skills does this project show?`  <!-- e.g., REST API design, async processing, TDD -->
+**Demonstrates:** Multi-stage sequential fine-tuning, PEFT/LoRA adapter training, HuggingFace Transformers and Trainer API, dataset preprocessing pipelines, evidence-based ADR documentation, unit testing with pytest and synthetic fixtures, flat Python package structuring
 **Key Technical Decisions:** See `docs/adr/` for documented rationale
 **Portfolio Repository:** Yes — maintain professional commit history and documentation standards
 
 ---
 
 *Last updated by Claude: `2026-03-14`*
-*Entry protocol completed: `no — run on first session`*
+*Entry protocol completed: `yes — 2026-03-14`*

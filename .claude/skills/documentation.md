@@ -96,5 +96,5 @@ Before marking documentation complete:
 - [ ] README commands tested and working from a clean environment
 - [ ] `docs/architecture.md` reflects the current implementation
 - [ ] New decisions have ADRs
-- [ ] No unfilled `{{PLACEHOLDER}}` tokens remain in any file
+- [ ] No unfilled template tokens remain in any operational file
 - [ ] Internal links between docs resolve to real files
