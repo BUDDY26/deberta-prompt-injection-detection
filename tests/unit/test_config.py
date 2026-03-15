@@ -9,13 +9,16 @@ LoRA constant tests are grouped in TestLoraConstants and skipped when peft
 is not installed. Non-LoRA tests always run regardless of peft availability.
 """
 
-import importlib
-
 import pytest
 
 import config
 
-_peft_available = importlib.util.find_spec("peft") is not None
+try:
+    import peft as _peft  # noqa: F401
+
+    _peft_available = True
+except Exception:
+    _peft_available = False
 
 
 # ---------------------------------------------------------------------------
