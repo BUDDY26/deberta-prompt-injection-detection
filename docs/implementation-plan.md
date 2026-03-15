@@ -630,5 +630,104 @@ Same pattern as 8.3. The config snapshot includes LoRA-specific hyperparameters
 
 ---
 
+## 15. Phase 10 — Inference Utilities
+
+**Goal:** Make the repository usable for direct prompt-injection inference without
+requiring a dataset download or evaluation pipeline. Any saved model artifact — full
+fine-tuned or LoRA adapter — should be loadable and queryable from a single entry point.
+
+**Depends on:** Phase 7 (CI-clean baseline); Phase 5 (`src/evaluate.py` established
+the tokenization and inference patterns this phase reuses).
+
+**Permission tier:** Allowed without asking (new files, no signature changes — CLAUDE.md §3).
+
+### Deliverables
+
+#### 10.1 — `src/inference.py`
+
+Unified inference module. Public API:
+
+| Symbol | Signature | Description |
+|--------|-----------|-------------|
+| `load_model` | `(model_path: str) → (model, tokenizer, device)` | Auto-detects artifact format; puts model in eval mode |
+| `predict` | `(text, model, tokenizer, device) → dict` | Single-text inference with label and probability output |
+| `predict_batch` | `(texts, model, tokenizer, device) → list[dict]` | Batch inference; same dict structure per item |
+
+**Format detection:** `load_model` checks for `adapter_config.json` in `model_path`.
+If present, the directory is a LoRA adapter and `PeftModel.from_pretrained` is used;
+the base model ID is read from `adapter_config.json` (`base_model_name_or_path`).
+If absent, `AutoModelForSequenceClassification.from_pretrained` is used directly.
+A clear `ImportError` is raised if peft is unavailable and a LoRA path is requested.
+
+**Return dict structure** (from `predict` and each element of `predict_batch`):
+
+```python
+{
+    "label":         int,   # 0 = safe, 1 = injection
+    "label_str":     str,   # "safe" or "injection"
+    "probability":   float, # softmax confidence in the predicted label
+    "probabilities": {"safe": float, "injection": float},
+}
+```
+
+Probabilities are derived from `torch.nn.functional.softmax` applied to raw logits —
+matching the decision rule in `src/evaluate.py` (`torch.argmax`) while adding
+calibrated confidence output.
+
+**CLI** (via `argparse`, `if __name__ == "__main__"`):
+
+```
+python src/inference.py --model-path <path> --text "..."
+python src/inference.py --model-path <path> --text "..." --output-format json
+```
+
+| Argument | Required | Default | Description |
+|----------|----------|---------|-------------|
+| `--model-path` | Yes | — | Path to model directory |
+| `--text` | Yes | — | Input text to classify |
+| `--output-format` | No | `text` | `text` (human-readable) or `json` (machine-readable) |
+
+Loading progress is written to `stderr`; the prediction result is written to `stdout`,
+keeping the JSON output format composable with downstream tooling.
+
+#### 10.2 — `tests/unit/test_inference.py`
+
+30 unit tests. All mocked — no network access, no disk model loading. Coverage:
+
+- `_is_lora_adapter`: detects `adapter_config.json` presence and absence
+- `_read_base_model_id`: correct read, missing field, empty string
+- `load_model`: full FT path (mocked AutoModel), LoRA path (mocked PeftModel),
+  peft import guard (monkeypatched `sys.modules`)
+- `predict`: correct label, correct `label_str`, probability matches predicted label,
+  probabilities sum to 1.0, return key set
+- `predict_batch`: empty list, single item, multiple items, structure matches `predict`
+- `_format_text`: label string present, confidence formatted correctly
+
+### Files added
+
+| File | Action |
+|------|--------|
+| `src/inference.py` | Create |
+| `tests/unit/test_inference.py` | Create |
+
+### Acceptance criteria
+
+- `python src/inference.py --help` exits 0 and prints usage
+- `python -c "import sys; sys.path.insert(0, 'src'); import inference"` exits 0
+- `pytest tests/ -v` passes with 0 failures (new tests increase pass count)
+- `ruff check src/inference.py tests/unit/test_inference.py` — 0 errors
+- `black --check src/inference.py tests/unit/test_inference.py` — 0 reformats
+
+### Verification status
+
+**Complete.** Verified 2026-03-15:
+- ruff: PASS
+- black: PASS
+- pytest: 79 passed, 17 skipped, 0 failed (+23 new inference tests)
+- `--help`: PASS
+- import isolation: PASS
+
+---
+
 *This implementation plan is read-only during coding passes.*
 *Last updated: 2026-03-15*
