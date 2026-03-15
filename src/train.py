@@ -68,7 +68,9 @@ def train_stage1(model, tokenizer):
         train_dataset=train_tok,
         eval_dataset=val_tok,
         compute_metrics=compute_metrics,
-        callbacks=[EarlyStoppingCallback(early_stopping_patience=config.STAGE1_PATIENCE)],
+        callbacks=[
+            EarlyStoppingCallback(early_stopping_patience=config.STAGE1_PATIENCE)
+        ],
     )
 
     trainer.train()
@@ -118,7 +120,9 @@ def train_stage2(model, tokenizer):
         train_dataset=train_tok,
         eval_dataset=val_tok,
         compute_metrics=compute_metrics,
-        callbacks=[EarlyStoppingCallback(early_stopping_patience=config.STAGE2_PATIENCE)],
+        callbacks=[
+            EarlyStoppingCallback(early_stopping_patience=config.STAGE2_PATIENCE)
+        ],
     )
 
     trainer.train()
@@ -186,11 +190,15 @@ def train_stage3():
         train_dataset=train_tok,
         eval_dataset=val_tok,
         compute_metrics=compute_metrics,
-        callbacks=[EarlyStoppingCallback(early_stopping_patience=config.STAGE3_PATIENCE)],
+        callbacks=[
+            EarlyStoppingCallback(early_stopping_patience=config.STAGE3_PATIENCE)
+        ],
     )
 
     trainer.train()
-    plot_training_metrics(trainer, "Aegis-AI-Content-Safety-Dataset-2.0", 3, config.PLOTS_DIR)
+    plot_training_metrics(
+        trainer, "Aegis-AI-Content-Safety-Dataset-2.0", 3, config.PLOTS_DIR
+    )
 
     test_metrics = trainer.evaluate(test_tok)
     print("\nStage 3 Test metrics:", test_metrics)

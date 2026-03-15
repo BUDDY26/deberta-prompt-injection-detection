@@ -65,8 +65,10 @@ LORA_BIAS = "none"
 # Training hyperparameters
 LORA_TRAIN_BATCH = 16
 LORA_EVAL_BATCH = 32
-LORA_LR = 2e-4   # differs from full FT (2e-5); higher LR is standard for LoRA
-LORA_STAGE1_EPOCHS = 10  # confirmed by trainer_state.json (notebook shows 20 — see ADR-006)
+LORA_LR = 2e-4  # differs from full FT (2e-5); higher LR is standard for LoRA
+LORA_STAGE1_EPOCHS = (
+    10  # confirmed by trainer_state.json (notebook shows 20 — see ADR-006)
+)
 LORA_STAGE2_EPOCHS = 10  # confirmed by trainer_state.json
 LORA_PATIENCE = 3
 
@@ -75,7 +77,7 @@ LORA_STAGE1_OUTPUT_DIR = "deberta-pi-lora-stage1"
 LORA_STAGE1_FINAL_DIR = "deberta-pi-lora-stage1-final"
 LORA_STAGE2_OUTPUT_DIR = "deberta-pi-lora-stage2"
 LORA_FINAL_ADAPTER_DIR = "deberta-pi-lora-final-adapter"  # model.save_pretrained
-LORA_FINAL_FULL_DIR = "deberta-pi-lora-final-full"         # trainer.save_model
+LORA_FINAL_FULL_DIR = "deberta-pi-lora-final-full"  # trainer.save_model
 
 
 def _make_lora_config():
@@ -140,7 +142,9 @@ def train_lora_stage1(model, tokenizer):
     )
 
     trainer.train()
-    plot_training_metrics(trainer, "safe-guard-prompt-injection (LoRA)", 1, config.PLOTS_DIR)
+    plot_training_metrics(
+        trainer, "safe-guard-prompt-injection (LoRA)", 1, config.PLOTS_DIR
+    )
 
     test_metrics = trainer.evaluate(test_tok)
     print("\nLoRA Stage 1 Test metrics:", test_metrics)
@@ -195,7 +199,9 @@ def train_lora_stage2(peft_model, tokenizer):
     )
 
     trainer.train()
-    plot_training_metrics(trainer, "SPML_Chatbot_Prompt_Injection (LoRA)", 2, config.PLOTS_DIR)
+    plot_training_metrics(
+        trainer, "SPML_Chatbot_Prompt_Injection (LoRA)", 2, config.PLOTS_DIR
+    )
 
     test_metrics = trainer.evaluate(test_tok)
     print("\nLoRA Stage 2 Test metrics:", test_metrics)
@@ -215,7 +221,9 @@ def train_lora_stage2(peft_model, tokenizer):
     tokenizer.save_pretrained(LORA_FINAL_FULL_DIR)
     print(f"Final full model saved to: {LORA_FINAL_FULL_DIR}")
 
-    print("Best model checkpoint from LoRA stage 2:", trainer.state.best_model_checkpoint)
+    print(
+        "Best model checkpoint from LoRA stage 2:", trainer.state.best_model_checkpoint
+    )
 
     return test_metrics
 

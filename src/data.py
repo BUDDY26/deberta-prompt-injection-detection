@@ -58,11 +58,25 @@ def load_stage1(tokenizer):
     # lost (d = d.rename_column(...) only updated the loop variable). Training
     # still worked because the Trainer handles "label" columns. The rename is
     # done correctly here so that set_format can target "labels" explicitly.
-    train_tok = train_tok.rename_column("label", "labels") if "label" in train_tok.column_names else train_tok
-    val_tok = val_tok.rename_column("label", "labels") if "label" in val_tok.column_names else val_tok
-    test_tok = test_tok.rename_column("label", "labels") if "label" in test_tok.column_names else test_tok
+    train_tok = (
+        train_tok.rename_column("label", "labels")
+        if "label" in train_tok.column_names
+        else train_tok
+    )
+    val_tok = (
+        val_tok.rename_column("label", "labels")
+        if "label" in val_tok.column_names
+        else val_tok
+    )
+    test_tok = (
+        test_tok.rename_column("label", "labels")
+        if "label" in test_tok.column_names
+        else test_tok
+    )
 
-    train_tok.set_format(type="torch", columns=["input_ids", "attention_mask", "labels"])
+    train_tok.set_format(
+        type="torch", columns=["input_ids", "attention_mask", "labels"]
+    )
     val_tok.set_format(type="torch", columns=["input_ids", "attention_mask", "labels"])
     test_tok.set_format(type="torch", columns=["input_ids", "attention_mask", "labels"])
 
@@ -95,8 +109,7 @@ def _preprocess_spml_batch(tokenizer, batch):
                 break
         if text_col is None:
             text_col = [
-                col for col in batch.keys()
-                if col not in ["label", "Prompt injection"]
+                col for col in batch.keys() if col not in ["label", "Prompt injection"]
             ][0]
         combined_text = batch[text_col]
 
@@ -160,7 +173,9 @@ def load_stage2(tokenizer):
     val_tok = val_tok.rename_column("label", "labels")
     test_tok = test_tok.rename_column("label", "labels")
 
-    train_tok.set_format(type="torch", columns=["input_ids", "attention_mask", "labels"])
+    train_tok.set_format(
+        type="torch", columns=["input_ids", "attention_mask", "labels"]
+    )
     val_tok.set_format(type="torch", columns=["input_ids", "attention_mask", "labels"])
     test_tok.set_format(type="torch", columns=["input_ids", "attention_mask", "labels"])
 
@@ -204,8 +219,7 @@ def load_stage3(tokenizer):
             max_length=config.MAX_LENGTH,
         )
         tokenized["labels"] = [
-            1 if label == "unsafe" else 0
-            for label in batch["prompt_label"]
+            1 if label == "unsafe" else 0 for label in batch["prompt_label"]
         ]
         return tokenized
 
@@ -213,7 +227,9 @@ def load_stage3(tokenizer):
     val_tok = val_ds.map(preprocess, batched=True, remove_columns=cols_val)
     test_tok = test_ds.map(preprocess, batched=True, remove_columns=cols_test)
 
-    train_tok.set_format(type="torch", columns=["input_ids", "attention_mask", "labels"])
+    train_tok.set_format(
+        type="torch", columns=["input_ids", "attention_mask", "labels"]
+    )
     val_tok.set_format(type="torch", columns=["input_ids", "attention_mask", "labels"])
     test_tok.set_format(type="torch", columns=["input_ids", "attention_mask", "labels"])
 

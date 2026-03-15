@@ -179,12 +179,15 @@ def test_report_to():
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.skipif(not _peft_available, reason="peft not installed; skipping LoRA constant tests")
+@pytest.mark.skipif(
+    not _peft_available, reason="peft not installed; skipping LoRA constant tests"
+)
 class TestLoraConstants:
     """LoRA constant assertions sourced from evidence-ledger §3, §7, and ADR-006."""
 
     def setup_method(self):
         import train_lora  # safe: only reached when _peft_available is True
+
         self.tl = train_lora
 
     def test_lora_r(self):

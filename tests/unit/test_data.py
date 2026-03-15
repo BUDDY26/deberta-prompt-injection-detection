@@ -19,7 +19,6 @@ from datasets import Dataset, DatasetDict
 
 import data
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
@@ -68,7 +67,10 @@ class MaxLengthCapturingTokenizer:
 
 def _make_stage1_datasetdict():
     """In-memory substitute for xTRam1/safe-guard-prompt-injection."""
-    rows = {"text": ["inject me", "hello world", "bad prompt", "fine text"], "label": [1, 0, 1, 0]}
+    rows = {
+        "text": ["inject me", "hello world", "bad prompt", "fine text"],
+        "label": [1, 0, 1, 0],
+    }
     return DatasetDict(
         {
             "train": Dataset.from_dict(rows),
@@ -108,6 +110,7 @@ def _make_stage2_datasetdict(include_validation=True):
 
 def _make_stage3_datasetdict():
     """In-memory substitute for nvidia/Aegis-AI-Content-Safety-Dataset-2.0."""
+
     def _split(prompts, labels):
         return Dataset.from_dict({"prompt": prompts, "prompt_label": labels})
 
@@ -211,9 +214,9 @@ class TestLoadStage1:
             train, val, test = data.load_stage1(tok)
 
         for split in (train, val, test):
-            assert "labels" in split.column_names, (
-                f"Expected 'labels' column, got: {split.column_names}"
-            )
+            assert (
+                "labels" in split.column_names
+            ), f"Expected 'labels' column, got: {split.column_names}"
 
     def test_label_column_not_present_after_rename(self):
         tok = FakeTokenizer()
@@ -244,20 +247,26 @@ class TestLoadStage1:
 class TestLoadStage2:
     def test_prompt_injection_renamed_to_labels(self):
         tok = FakeTokenizer()
-        with patch("data.load_dataset", return_value=_make_stage2_datasetdict(include_validation=True)):
+        with patch(
+            "data.load_dataset",
+            return_value=_make_stage2_datasetdict(include_validation=True),
+        ):
             train, val, test = data.load_stage2(tok)
 
         for split in (train, val, test):
-            assert "labels" in split.column_names, (
-                f"Expected 'labels' column, got: {split.column_names}"
-            )
+            assert (
+                "labels" in split.column_names
+            ), f"Expected 'labels' column, got: {split.column_names}"
             assert "Prompt injection" not in split.column_names
             assert "label" not in split.column_names
 
     def test_validation_fallback_no_native_val(self):
         """When the dataset has no 'validation' split, a 10% split is created from train."""
         tok = FakeTokenizer()
-        with patch("data.load_dataset", return_value=_make_stage2_datasetdict(include_validation=False)):
+        with patch(
+            "data.load_dataset",
+            return_value=_make_stage2_datasetdict(include_validation=False),
+        ):
             train, val, test = data.load_stage2(tok)
 
         # All three splits must be returned regardless of the path taken

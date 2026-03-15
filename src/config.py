@@ -35,7 +35,7 @@ STAGE1_OUTPUT_DIR = "deberta-pi-full-stage1"
 STAGE1_FINAL_DIR = "deberta-pi-full-stage1-final"
 
 STAGE2_OUTPUT_DIR = "deberta-pi-full-stage2"
-STAGE2_FINAL_DIR = "deberta-pi-full-final"   # stage 3 reloads from this path
+STAGE2_FINAL_DIR = "deberta-pi-full-final"  # stage 3 reloads from this path
 
 STAGE3_OUTPUT_DIR = "deberta-pi-full-stage3"
 STAGE3_FINAL_DIR = "deberta-pi-full-stage3-final"

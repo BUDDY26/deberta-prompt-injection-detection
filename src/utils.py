@@ -77,7 +77,9 @@ def plot_training_metrics(trainer, dataset_name, stage_num, output_dir):
         axes[0].legend()
 
     if eval_steps and eval_loss:
-        axes[1].plot(eval_steps, eval_loss, "r-", linewidth=2, marker="o", label="Eval Loss")
+        axes[1].plot(
+            eval_steps, eval_loss, "r-", linewidth=2, marker="o", label="Eval Loss"
+        )
         axes[1].set_xlabel("Steps", fontsize=12)
         axes[1].set_ylabel("Loss", fontsize=12)
         axes[1].set_title("Evaluation Loss", fontsize=14)
@@ -85,7 +87,14 @@ def plot_training_metrics(trainer, dataset_name, stage_num, output_dir):
         axes[1].legend()
 
     if eval_steps and eval_accuracy:
-        axes[2].plot(eval_steps, eval_accuracy, "g-", linewidth=2, marker="s", label="Eval Accuracy")
+        axes[2].plot(
+            eval_steps,
+            eval_accuracy,
+            "g-",
+            linewidth=2,
+            marker="s",
+            label="Eval Accuracy",
+        )
         axes[2].set_xlabel("Steps", fontsize=12)
         axes[2].set_ylabel("Accuracy", fontsize=12)
         axes[2].set_title("Evaluation Accuracy", fontsize=14)
