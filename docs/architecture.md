@@ -1,14 +1,16 @@
 # Architecture Overview
 
 **Project:** deberta-prompt-injection-detection
-**Last updated:** 2026-03-14
-**Status:** Active Development — reconstruction in progress
+**Last updated:** 2026-03-15
+**Status:** Complete
 
 > **Legend used in this document**
 >
 > - `[CONFIRMED]` — fact sourced directly from `docs/evidence-ledger.md`
-> - `[PLANNED]` — proposed structure for reconstruction; not yet implemented
-> - `[OPEN DECISION]` — requires explicit approval before implementation proceeds
+>
+> All open design decisions referenced in earlier drafts of this document have been
+> resolved and recorded as ADRs in `docs/adr/`. Sections 7 and 8 below are preserved
+> as historical record of the pre-implementation gap analysis and decision process.
 
 ---
 
@@ -234,70 +236,65 @@ Source: `docs/evidence-ledger.md` §7
 
 ---
 
-## 5. Canonical Proposed Repository Architecture
+## 5. Repository Architecture
 
-`[PLANNED]` The following structure is proposed for the reconstructed repository.
-It is not yet implemented. Approval is required before any code changes begin.
+`[CONFIRMED]` The following structure reflects the repository as built across Phases 3–10.
 
 ### Guiding principles
 
-1. **Single entry point.** `src/train.py` is the canonical run command referenced in
-   `README.md` and `docs/runbooks/operations.md`. It must exist.
-2. **Separation of concerns.** Configuration, data loading, training, and evaluation
-   are separate modules with clear interfaces.
-3. **Reproducibility.** A global seed is set once at startup. All file paths are resolved
-   relative to a configurable output root, not the script's working directory.
-4. **Traceability.** Every training run saves its hyperparameters and results in a
-   consistent location under `results/`.
+1. **Single entry point.** `src/train.py` is the canonical full fine-tuning command; `src/train_lora.py` is the canonical LoRA command.
+2. **Separation of concerns.** Configuration, data loading, training, evaluation, and inference are separate modules with clear interfaces.
+3. **Reproducibility.** A global seed (`config.GLOBAL_SEED = 42`) is set once at startup; both training scripts accept `--seed` to override. Every training run co-locates a `run_config.json` alongside model artifacts.
+4. **Traceability.** Every training run saves its hyperparameters and results in a consistent location.
 
-### Proposed source layout
+### Source layout
 
 ```
 src/
-├── config.py      # Centralized hyperparameter and path configuration
-├── data.py        # Dataset loading, column normalization, tokenization for all 3 stages
-├── train.py       # Main entry point — orchestrates all three stages sequentially
-├── evaluate.py    # Post-training evaluation (replaces test_model.py)
-└── utils.py       # Shared utilities: metric plotting, seed setting, logging helpers
+├── config.py       # All confirmed hyperparameters, dataset IDs, output paths
+├── data.py         # Dataset loading and preprocessing (three stages)
+├── utils.py        # compute_metrics, plot_training_metrics, set_global_seed, write_run_config
+├── train.py        # Full fine-tuning entry point (three-stage sequential pipeline)
+├── train_lora.py   # LoRA adapter training entry point (two-stage pipeline; ADR-002)
+├── evaluate.py     # Parameterized post-training evaluation (Aegis test set; ADR-005)
+├── inference.py    # Unified inference module and CLI (full FT + LoRA; auto-detects format)
+├── finetune.py     # Original stages 1–2 script (retained per ADR-006)
+├── finetune_2.py   # Original stage 3 script (retained per ADR-006)
+└── test_model.py   # Original evaluation script (retained per ADR-006)
 ```
 
 ### Module responsibilities
 
 | Module | Responsibility |
 |--------|---------------|
-| `src/config.py` | All hyperparameters (LR, batch sizes, epoch counts, LoRA rank/alpha), dataset IDs, output directory roots. Single source of truth for all configurable values. |
-| `src/data.py` | One `load_stage_dataset(stage_num)` function per stage; handles column normalization, tokenization, split logic. Returns train/val/test `DatasetDict`. |
-| `src/train.py` | Entry point. Sets global seed, loads config, calls `data.py` and runs three sequential `Trainer` instances. Saves each stage's model and calls `evaluate.py`. |
-| `src/evaluate.py` | Standalone evaluation. Loads a saved model from disk, runs inference on a specified dataset, reports and saves full metrics. Replaces `src/test_model.py`. |
-| `src/utils.py` | `plot_training_metrics()`, `set_seed()`, `save_results()`. Shared by train and evaluate. |
+| `src/config.py` | All hyperparameters (LR, batch sizes, epoch counts, LoRA rank/alpha), dataset IDs, output directory roots, global seed. Single source of truth. |
+| `src/data.py` | `load_stage1`, `load_stage2`, `load_stage3` — column normalization, tokenization, split logic. Returns tokenized train/val/test datasets. |
+| `src/train.py` | Full fine-tuning entry point. Sets global seed, runs three sequential `Trainer` instances, saves per-stage models, writes `run_config.json`. |
+| `src/train_lora.py` | LoRA adapter entry point. Wraps base model with PEFT, runs stages 1–2 sequentially in-memory, saves adapter weights and `run_config.json`. |
+| `src/evaluate.py` | Standalone evaluation. Loads a full fine-tuned model from disk, runs batched inference on the Aegis test set, writes metrics to `results/evaluation/`. |
+| `src/inference.py` | Unified inference. `load_model()` auto-detects full FT vs. LoRA adapter (via `adapter_config.json`). `predict()` / `predict_batch()` return label, `label_str`, probability, and raw softmax probabilities. CLI: `--model-path`, `--text`, `--output-format {text,json}`. |
+| `src/utils.py` | `compute_metrics()`, `plot_training_metrics()`, `set_global_seed()`, `write_run_config()`. Shared by both training pipelines. |
 
-### Proposed test layout
+### Test layout
 
 ```
 tests/
+├── conftest.py           # pytest path setup (flat src/ layout)
 ├── unit/
-│   ├── test_data.py      # Tests for dataset loading and preprocessing functions
-│   ├── test_config.py    # Tests for config defaults and validation
-│   └── test_evaluate.py  # Tests for metric computation functions
-└── integration/
-    └── test_pipeline.py  # End-to-end smoke test: tiny dataset, one epoch, checks outputs
+│   ├── test_config.py    # Hyperparameter constant assertions
+│   ├── test_data.py      # Dataset loading and preprocessing (synthetic fixtures)
+│   ├── test_inference.py # load_model, predict, predict_batch (fully mocked)
+│   └── test_utils.py     # compute_metrics, set_global_seed
+└── integration/          # Placeholder (see docs/qa/qa-plan.md)
 ```
 
-### Proposed results layout
+### Results layout
 
 ```
 results/
-├── stage1/
-│   ├── trainer_state.json
-│   └── metrics.png
-├── stage2/
-│   ├── trainer_state.json
-│   └── metrics.png
-├── stage3/
-│   ├── trainer_state.json
-│   └── metrics.png
-└── evaluation/
-    └── aegis_test_results.txt
+├── test_results_2dataset.txt    # Stage 2 model on Aegis: 41.60% accuracy (legacy)
+├── test_results_3datasets.txt   # Stage 3 model on Aegis: 81.16% accuracy (legacy)
+└── evaluation/                  # Canonical outputs from src/evaluate.py (created on first run)
 ```
 
 ---
@@ -308,7 +305,7 @@ results/
 
 | Property | Full Fine-Tuning | LoRA |
 |----------|-----------------|------|
-| Training script | `src/finetune.py`, `src/finetune_2.py` | Not in `src/` (notebook only) |
+| Training script | `src/train.py` (canonical); `src/finetune.py`, `src/finetune_2.py` (original, retained per ADR-006) | `src/train_lora.py` (canonical); source notebook retained per ADR-006 |
 | Adapter format | Full model weights | PEFT adapter (adapter_model.safetensors) |
 | Base model frozen | No — all weights updated | Yes — only LoRA layers trained |
 | LoRA rank | N/A | r=16 |
@@ -325,8 +322,9 @@ results/
 
 Source: `docs/evidence-ledger.md` §2, §3, §6, §8
 
-`[OPEN DECISION]` Which pipeline should be designated the canonical approach for this project?
-See Section 8 for the full list of open decisions.
+Both pipelines are maintained side-by-side. See ADR-002 for the rationale.
+`src/inference.py` supports both artifact formats — format is detected automatically via the
+presence of `adapter_config.json` in the model directory.
 
 ---
 
@@ -442,4 +440,4 @@ picture of per-stage learning, but requires more compute and storage.
 ---
 
 *Full system design lives in this document. Key technical decisions will be recorded in `docs/adr/`.*
-*Last updated by Claude: 2026-03-14*
+*Last updated by Claude: 2026-03-15*
