@@ -8,10 +8,15 @@ confirmed in docs/evidence-ledger.md §7.
     compute_metrics        -- accuracy metric callback for HuggingFace Trainer
     plot_training_metrics  -- save loss/accuracy plots after each training stage
     set_global_seed        -- set random seeds across Python, NumPy, and PyTorch
+    write_run_config       -- write run_config.json into a training output directory
 """
 
+import json
 import os
 import random
+import subprocess
+import sys
+from datetime import datetime, timezone
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -127,3 +132,48 @@ def set_global_seed(seed: int = 42) -> None:
     torch.manual_seed(seed)
     if torch.cuda.is_available():
         torch.cuda.manual_seed_all(seed)
+
+
+def write_run_config(output_dir: str, config_snapshot: dict) -> None:
+    """
+    Write a run_config.json file into output_dir capturing run metadata.
+
+    Always-included fields (added by this function):
+        timestamp   -- ISO 8601 UTC timestamp of the run
+        git_commit  -- short commit hash from git HEAD (empty string if unavailable)
+        python      -- Python version string
+        torch       -- PyTorch version string
+
+    Caller-provided fields (via config_snapshot):
+        Any key-value pairs relevant to the run, e.g. seed, hyperparameters.
+
+    Args:
+        output_dir:      Directory where run_config.json will be written.
+                         Created if it does not exist.
+        config_snapshot: Dict of caller-supplied fields to include in the record.
+    """
+    try:
+        git_commit = (
+            subprocess.check_output(
+                ["git", "rev-parse", "--short", "HEAD"],
+                stderr=subprocess.DEVNULL,
+            )
+            .decode()
+            .strip()
+        )
+    except Exception:
+        git_commit = ""
+
+    record = {
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "git_commit": git_commit,
+        "python": sys.version,
+        "torch": torch.__version__,
+    }
+    record.update(config_snapshot)
+
+    os.makedirs(output_dir, exist_ok=True)
+    path = os.path.join(output_dir, "run_config.json")
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(record, f, indent=2)
+    print(f"Run config written to: {path}")

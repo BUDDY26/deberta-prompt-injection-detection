@@ -46,7 +46,12 @@ from transformers import (
 
 import config
 from data import load_stage1, load_stage2
-from utils import compute_metrics, plot_training_metrics, set_global_seed
+from utils import (
+    compute_metrics,
+    plot_training_metrics,
+    set_global_seed,
+    write_run_config,
+)
 
 # ---------------------------------------------------------------------------
 # LoRA-specific constants
@@ -229,7 +234,50 @@ def train_lora_stage2(peft_model, tokenizer):
 
 
 def main():
-    set_global_seed(42)
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        description="LoRA fine-tuning pipeline for DeBERTa prompt injection detection."
+    )
+    parser.add_argument(
+        "--seed",
+        type=int,
+        default=config.GLOBAL_SEED,
+        help=f"Random seed (default: {config.GLOBAL_SEED})",
+    )
+    args = parser.parse_args()
+
+    set_global_seed(args.seed)
+
+    write_run_config(
+        config.PLOTS_DIR,
+        {
+            "pipeline": "lora",
+            "seed": args.seed,
+            "base_model": config.BASE_MODEL,
+            "lora": {
+                "r": LORA_R,
+                "alpha": LORA_ALPHA,
+                "dropout": LORA_DROPOUT,
+                "target_modules": LORA_TARGET_MODULES,
+                "bias": LORA_BIAS,
+            },
+            "stage1": {
+                "dataset": config.STAGE1_DATASET,
+                "lr": LORA_LR,
+                "train_batch": LORA_TRAIN_BATCH,
+                "epochs": LORA_STAGE1_EPOCHS,
+                "patience": LORA_PATIENCE,
+            },
+            "stage2": {
+                "dataset": config.STAGE2_DATASET,
+                "lr": LORA_LR,
+                "train_batch": LORA_TRAIN_BATCH,
+                "epochs": LORA_STAGE2_EPOCHS,
+                "patience": LORA_PATIENCE,
+            },
+        },
+    )
 
     print(f"Loading base model: {config.BASE_MODEL}")
     tokenizer = AutoTokenizer.from_pretrained(config.BASE_MODEL)

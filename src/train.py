@@ -34,7 +34,12 @@ from transformers import (
 
 import config
 from data import load_stage1, load_stage2, load_stage3
-from utils import compute_metrics, plot_training_metrics, set_global_seed
+from utils import (
+    compute_metrics,
+    plot_training_metrics,
+    set_global_seed,
+    write_run_config,
+)
 
 
 def train_stage1(model, tokenizer):
@@ -212,7 +217,50 @@ def train_stage3():
 
 
 def main():
-    set_global_seed(42)
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        description="Full fine-tuning pipeline for DeBERTa prompt injection detection."
+    )
+    parser.add_argument(
+        "--seed",
+        type=int,
+        default=config.GLOBAL_SEED,
+        help=f"Random seed (default: {config.GLOBAL_SEED})",
+    )
+    args = parser.parse_args()
+
+    set_global_seed(args.seed)
+
+    write_run_config(
+        config.PLOTS_DIR,
+        {
+            "pipeline": "full_ft",
+            "seed": args.seed,
+            "base_model": config.BASE_MODEL,
+            "stage1": {
+                "dataset": config.STAGE1_DATASET,
+                "lr": config.STAGE1_LR,
+                "train_batch": config.STAGE1_TRAIN_BATCH,
+                "epochs": config.STAGE1_EPOCHS,
+                "patience": config.STAGE1_PATIENCE,
+            },
+            "stage2": {
+                "dataset": config.STAGE2_DATASET,
+                "lr": config.STAGE2_LR,
+                "train_batch": config.STAGE2_TRAIN_BATCH,
+                "epochs": config.STAGE2_EPOCHS,
+                "patience": config.STAGE2_PATIENCE,
+            },
+            "stage3": {
+                "dataset": config.STAGE3_DATASET,
+                "lr": config.STAGE3_LR,
+                "train_batch": config.STAGE3_TRAIN_BATCH,
+                "epochs": config.STAGE3_EPOCHS,
+                "patience": config.STAGE3_PATIENCE,
+            },
+        },
+    )
 
     print(f"Loading base model: {config.BASE_MODEL}")
     tokenizer = AutoTokenizer.from_pretrained(config.BASE_MODEL)

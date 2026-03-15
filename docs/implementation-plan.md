@@ -580,5 +580,55 @@ are marked with `[A]`.
 
 ---
 
+## 14. Phase 8 — Experiment Reproducibility
+
+**Goal:** Make training and evaluation runs reproducible and auditable. Every model
+directory must contain a complete, self-contained record of the parameters that produced it.
+
+**Depends on:** Phase 7 (CI-clean baseline).
+
+**Permission tier:** Allowed without asking (additive, no signature changes — CLAUDE.md §3).
+
+### Deliverables
+
+#### 8.1 — `GLOBAL_SEED` constant in `src/config.py`
+
+Add `GLOBAL_SEED = 42` under a new `Reproducibility` section. This centralizes the
+seed value so both training pipelines read from a single source of truth.
+
+#### 8.2 — `write_run_config()` helper in `src/utils.py`
+
+Add a function that writes `run_config.json` to a caller-specified output directory.
+The file captures:
+- ISO 8601 UTC timestamp
+- Short git commit hash (empty string if unavailable)
+- Python version
+- PyTorch version
+- All caller-supplied fields (seed, hyperparameters, pipeline name)
+
+#### 8.3 — CLI `--seed` argument and `write_run_config()` call in `src/train.py`
+
+- Import `write_run_config` from `utils`
+- Replace hardcoded `set_global_seed(42)` with `set_global_seed(args.seed)`
+- Add `argparse` with `--seed INT` (default: `config.GLOBAL_SEED`)
+- Call `write_run_config(config.PLOTS_DIR, {...})` immediately after seed is set
+
+#### 8.4 — CLI `--seed` argument and `write_run_config()` call in `src/train_lora.py`
+
+Same pattern as 8.3. The config snapshot includes LoRA-specific hyperparameters
+(`r`, `alpha`, `dropout`, `target_modules`, `bias`) in addition to training constants.
+
+### Files modified
+
+| File | Change |
+|------|--------|
+| `src/config.py` | Add `GLOBAL_SEED = 42` |
+| `src/utils.py` | Add `write_run_config()` function; add `json`, `subprocess`, `sys`, `datetime` imports |
+| `src/train.py` | Add `--seed` CLI arg; replace hardcoded seed; call `write_run_config()` |
+| `src/train_lora.py` | Add `--seed` CLI arg; replace hardcoded seed; call `write_run_config()` |
+| `docs/implementation-plan.md` | Add this Phase 8 section |
+
+---
+
 *This implementation plan is read-only during coding passes.*
-*Last updated: 2026-03-14*
+*Last updated: 2026-03-15*

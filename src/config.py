@@ -10,6 +10,11 @@ TrainingArguments defaults, plots directory) are reused by both pipelines.
 """
 
 # ---------------------------------------------------------------------------
+# Reproducibility  (Phase 8)
+# ---------------------------------------------------------------------------
+GLOBAL_SEED = 42  # default seed; overridable via --seed CLI argument
+
+# ---------------------------------------------------------------------------
 # Base model  (evidence-ledger §2)
 # ---------------------------------------------------------------------------
 BASE_MODEL = "ProtectAI/deberta-v3-base-prompt-injection"
