@@ -48,5 +48,10 @@ Thumbs.db
 .bootstrap-complete
 
 # Trained models (large artifacts)
+# Binary weights and checkpoints are not tracked; documentation files are.
 models/*
 !models/README.md
+!models/MANIFEST.md
+!models/deberta-pi-lora-*/
+models/deberta-pi-lora-*/*
+!models/deberta-pi-lora-*/README.md

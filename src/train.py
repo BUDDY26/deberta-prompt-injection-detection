@@ -232,35 +232,33 @@ def main():
 
     set_global_seed(args.seed)
 
-    write_run_config(
-        config.PLOTS_DIR,
-        {
-            "pipeline": "full_ft",
-            "seed": args.seed,
-            "base_model": config.BASE_MODEL,
-            "stage1": {
-                "dataset": config.STAGE1_DATASET,
-                "lr": config.STAGE1_LR,
-                "train_batch": config.STAGE1_TRAIN_BATCH,
-                "epochs": config.STAGE1_EPOCHS,
-                "patience": config.STAGE1_PATIENCE,
-            },
-            "stage2": {
-                "dataset": config.STAGE2_DATASET,
-                "lr": config.STAGE2_LR,
-                "train_batch": config.STAGE2_TRAIN_BATCH,
-                "epochs": config.STAGE2_EPOCHS,
-                "patience": config.STAGE2_PATIENCE,
-            },
-            "stage3": {
-                "dataset": config.STAGE3_DATASET,
-                "lr": config.STAGE3_LR,
-                "train_batch": config.STAGE3_TRAIN_BATCH,
-                "epochs": config.STAGE3_EPOCHS,
-                "patience": config.STAGE3_PATIENCE,
-            },
+    run_snapshot = {
+        "pipeline": "full_ft",
+        "seed": args.seed,
+        "base_model": config.BASE_MODEL,
+        "stage1": {
+            "dataset": config.STAGE1_DATASET,
+            "lr": config.STAGE1_LR,
+            "train_batch": config.STAGE1_TRAIN_BATCH,
+            "epochs": config.STAGE1_EPOCHS,
+            "patience": config.STAGE1_PATIENCE,
         },
-    )
+        "stage2": {
+            "dataset": config.STAGE2_DATASET,
+            "lr": config.STAGE2_LR,
+            "train_batch": config.STAGE2_TRAIN_BATCH,
+            "epochs": config.STAGE2_EPOCHS,
+            "patience": config.STAGE2_PATIENCE,
+        },
+        "stage3": {
+            "dataset": config.STAGE3_DATASET,
+            "lr": config.STAGE3_LR,
+            "train_batch": config.STAGE3_TRAIN_BATCH,
+            "epochs": config.STAGE3_EPOCHS,
+            "patience": config.STAGE3_PATIENCE,
+        },
+    }
+    write_run_config(config.PLOTS_DIR, run_snapshot)
 
     print(f"Loading base model: {config.BASE_MODEL}")
     tokenizer = AutoTokenizer.from_pretrained(config.BASE_MODEL)
@@ -274,6 +272,9 @@ def main():
 
     # Stage 3 reloads the model from deberta-pi-full-final
     test_metrics3 = train_stage3()
+
+    # Write run provenance alongside the final model artifact (Phase 9)
+    write_run_config(config.STAGE3_FINAL_DIR, run_snapshot)
 
     print("\n" + "=" * 60)
     print("Training complete!")

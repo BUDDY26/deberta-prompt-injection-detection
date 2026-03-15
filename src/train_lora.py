@@ -249,35 +249,33 @@ def main():
 
     set_global_seed(args.seed)
 
-    write_run_config(
-        config.PLOTS_DIR,
-        {
-            "pipeline": "lora",
-            "seed": args.seed,
-            "base_model": config.BASE_MODEL,
-            "lora": {
-                "r": LORA_R,
-                "alpha": LORA_ALPHA,
-                "dropout": LORA_DROPOUT,
-                "target_modules": LORA_TARGET_MODULES,
-                "bias": LORA_BIAS,
-            },
-            "stage1": {
-                "dataset": config.STAGE1_DATASET,
-                "lr": LORA_LR,
-                "train_batch": LORA_TRAIN_BATCH,
-                "epochs": LORA_STAGE1_EPOCHS,
-                "patience": LORA_PATIENCE,
-            },
-            "stage2": {
-                "dataset": config.STAGE2_DATASET,
-                "lr": LORA_LR,
-                "train_batch": LORA_TRAIN_BATCH,
-                "epochs": LORA_STAGE2_EPOCHS,
-                "patience": LORA_PATIENCE,
-            },
+    run_snapshot = {
+        "pipeline": "lora",
+        "seed": args.seed,
+        "base_model": config.BASE_MODEL,
+        "lora": {
+            "r": LORA_R,
+            "alpha": LORA_ALPHA,
+            "dropout": LORA_DROPOUT,
+            "target_modules": LORA_TARGET_MODULES,
+            "bias": LORA_BIAS,
         },
-    )
+        "stage1": {
+            "dataset": config.STAGE1_DATASET,
+            "lr": LORA_LR,
+            "train_batch": LORA_TRAIN_BATCH,
+            "epochs": LORA_STAGE1_EPOCHS,
+            "patience": LORA_PATIENCE,
+        },
+        "stage2": {
+            "dataset": config.STAGE2_DATASET,
+            "lr": LORA_LR,
+            "train_batch": LORA_TRAIN_BATCH,
+            "epochs": LORA_STAGE2_EPOCHS,
+            "patience": LORA_PATIENCE,
+        },
+    }
+    write_run_config(config.PLOTS_DIR, run_snapshot)
 
     print(f"Loading base model: {config.BASE_MODEL}")
     tokenizer = AutoTokenizer.from_pretrained(config.BASE_MODEL)
@@ -288,6 +286,9 @@ def main():
     # Stages 1 and 2 share the in-memory PEFT model object
     peft_model, test_metrics1 = train_lora_stage1(base_model, tokenizer)
     test_metrics2 = train_lora_stage2(peft_model, tokenizer)
+
+    # Write run provenance alongside the final adapter artifact (Phase 9)
+    write_run_config(LORA_FINAL_ADAPTER_DIR, run_snapshot)
 
     print("\n" + "=" * 60)
     print("LoRA training complete!")
